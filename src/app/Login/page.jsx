@@ -2,12 +2,21 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+// Firebase
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function LoginPage() {
+  const router = useRouter();
+
   const [formData, setFormData] = useState({
-    id: "",
+    email: "",      // 🔁 changed from id → email
     password: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -16,10 +25,26 @@ export default function LoginPage() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data:", formData);
-    alert("Login successful (demo)");
+    setLoading(true);
+
+    try {
+      await signInWithEmailAndPassword(
+        auth,
+        formData.email,
+        formData.password
+      );
+
+      alert("Login successful!");
+      router.push("/");
+
+    } catch (error) {
+      console.error(error);
+      alert("Invalid email or password");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -39,25 +64,26 @@ export default function LoginPage() {
         {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-4">
 
-          {/* ID */}
+          {/* EMAIL */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
-              User ID
+              Email
             </label>
             <input
-              type="text"
-              name="id"
+              type="email"
+              name="email"
               required
-              placeholder="Enter your ID"
-              value={formData.id}
+              placeholder="Enter your email"
+              value={formData.email}
               onChange={handleChange}
- className="mt-1 w-full px-4 py-2 border rounded-lg 
-    text-gray-800 placeholder-gray-500 
-    focus:ring-2 focus:ring-[#2F4FA3] focus:border-[#2F4FA3] 
-    outline-none"            />
+              className="mt-1 w-full px-4 py-2 border rounded-lg 
+              text-gray-800 placeholder-gray-500 
+              focus:ring-2 focus:ring-[#2F4FA3] focus:border-[#2F4FA3] 
+              outline-none"
+            />
           </div>
 
-          {/* Password */}
+          {/* PASSWORD */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
               Password
@@ -69,10 +95,11 @@ export default function LoginPage() {
               placeholder="Enter your password"
               value={formData.password}
               onChange={handleChange}
- className="mt-1 w-full px-4 py-2 border rounded-lg 
-    text-gray-800 placeholder-gray-500 
-    focus:ring-2 focus:ring-[#2F4FA3] focus:border-[#2F4FA3] 
-    outline-none"            />
+              className="mt-1 w-full px-4 py-2 border rounded-lg 
+              text-gray-800 placeholder-gray-500 
+              focus:ring-2 focus:ring-[#2F4FA3] focus:border-[#2F4FA3] 
+              outline-none"
+            />
           </div>
 
           {/* Forgot Password */}
@@ -88,9 +115,11 @@ export default function LoginPage() {
           {/* SUBMIT */}
           <button
             type="submit"
-            className="w-full bg-[#2F4FA3] text-white py-2 rounded-lg font-medium hover:bg-[#243f8f] transition shadow"
+            disabled={loading}
+            className="w-full bg-[#2F4FA3] text-white py-2 rounded-lg font-medium 
+            hover:bg-[#243f8f] transition shadow disabled:opacity-50"
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>
@@ -98,7 +127,7 @@ export default function LoginPage() {
         {/* FOOTER */}
         <p className="text-center text-sm text-gray-500 mt-6">
           Don’t have an account?{" "}
-          <Link href="/Register" className="text-[#2F4FA3] hover:underline">
+          <Link href="/register" className="text-[#2F4FA3] hover:underline">
             Register here
           </Link>
         </p>

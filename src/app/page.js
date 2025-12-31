@@ -1,6 +1,8 @@
 import Image from "next/image";
-import Hero from "./Components/Hero";
-import ExtendedHero from "./Components/ExtendedHero";
+import Hero from "./components/Hero";
+import ExtendedHero from "./components/ExtendedHero";
+import ApolloFAQ from "./ApolloFAQ/page";
+import ApolloTestimonials from "./ApolloTestimonials/page";
 
 export default function Home() {
   return (
@@ -9,8 +11,8 @@ export default function Home() {
 
  <Hero/>
  <ExtendedHero/>
-
-
+<ApolloFAQ/>
+<ApolloTestimonials/>
 
 
     </div>
