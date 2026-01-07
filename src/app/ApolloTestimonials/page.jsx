@@ -27,7 +27,7 @@ const testimonials = [
     role: "International Patient",
     city: "UK",
     image: "/images/user3.jpg",
-    rating: 5,
+    rating: 4,
     feedback:
       "From visa assistance to post-treatment care, Apollo Hospitals managed everything seamlessly. Truly a global healthcare leader.",
   },
@@ -36,7 +36,7 @@ const testimonials = [
     role: "Orthopedic Surgery",
     city: "Bangalore",
     image: "/images/user4.jpg",
-    rating: 5,
+    rating: 4,
     feedback:
       "The advanced technology and expert doctors at Apollo helped me recover faster than expected. Highly recommended.",
   },
@@ -45,7 +45,7 @@ const testimonials = [
     role: "Preventive Health Program",
     city: "Kolkata",
     image: "/images/user5.jpg",
-    rating: 5,
+    rating: 3,
     feedback:
       "Apollo Clinics made preventive healthcare easy and accessible. Regular check-ups are now stress-free.",
   },
