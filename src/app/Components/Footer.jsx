@@ -33,24 +33,24 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3 text-gray-600">
               <li>
-                <Link href="/monitoring" className="hover:text-[#2F4FA3] transition">
+                
                   Real-Time Monitoring
-                </Link>
+                
               </li>
               <li>
-                <Link href="/alerts" className="hover:text-[#2F4FA3] transition">
+                
                   Family Alert System
-                </Link>
+            
               </li>
               <li>
-                <Link href="/analytics" className="hover:text-[#2F4FA3] transition">
+                
                   Health Analytics
-                </Link>
+                
               </li>
               <li>
-                <Link href="/security" className="hover:text-[#2F4FA3] transition">
+               
                   Data Security
-                </Link>
+
               </li>
             </ul>
           </div>
@@ -67,18 +67,18 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/careers" className="hover:text-[#2F4FA3] transition">
-                  Careers
-                </Link>
-              </li>
-              <li>
-                <Link href="/partners" className="hover:text-[#2F4FA3] transition">
-                  Partners
-                </Link>
-              </li>
-              <li>
                 <Link href="/contact" className="hover:text-[#2F4FA3] transition">
-                  Contact
+                  Contact Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/dashboard" className="hover:text-[#2F4FA3] transition">
+                  Dashboard
+                </Link>
+              </li>
+              <li>
+                <Link href="/" className="hover:text-[#2F4FA3] transition">
+                  Home
                 </Link>
               </li>
             </ul>
@@ -109,13 +109,13 @@ const Footer = () => {
           </p>
 
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-[#2F4FA3] transition">
+            <Link href="/legal" className="hover:text-[#2F4FA3] transition">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="hover:text-[#2F4FA3] transition">
+            <Link href="/legal" className="hover:text-[#2F4FA3] transition">
               Terms of Service
             </Link>
-            <Link href="/security" className="hover:text-[#2F4FA3] transition">
+            <Link href="/legal" className="hover:text-[#2F4FA3] transition">
               Security
             </Link>
           </div>

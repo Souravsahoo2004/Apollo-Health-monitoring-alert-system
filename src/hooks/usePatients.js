@@ -12,39 +12,75 @@ export function usePatients(doctorId) {
   useEffect(() => {
     if (!doctorId) return;
     
-    const ref = collection(db, "users", doctorId, "patients");
-    const unsub = onSnapshot(ref, async (snap) => {
-      const patientsData = await Promise.all(
-        snap.docs.map(async (d) => {
-          const patientData = { id: d.id, ...d.data() };
-          
-          const healthRef = collection(
-            db, "users", doctorId, "patients", d.id, "healthData"
-          );
-          const healthQuery = query(
-            healthRef, orderBy("timestamp", "desc"), limit(1)
-          );
-          
-          const healthSnap = await getDocs(healthQuery);
+    const healthUnsubscribers = [];
+    
+    const patientsRef = collection(db, "users", doctorId, "patients");
+    
+    // Listen to patient collection changes
+    const unsubscribePatients = onSnapshot(patientsRef, async (patientsSnap) => {
+      // Clear old health listeners
+      healthUnsubscribers.forEach(unsub => unsub());
+      healthUnsubscribers.length = 0;
+      
+      const patientsData = [];
+      
+      for (const patientDoc of patientsSnap.docs) {
+        const patientData = { id: patientDoc.id, ...patientDoc.data() };
+        
+        // Fetch initial health data
+        const healthRef = collection(
+          db, "users", doctorId, "patients", patientDoc.id, "healthData"
+        );
+        const healthQuery = query(healthRef, orderBy("timestamp", "desc"), limit(1));
+        const healthSnap = await getDocs(healthQuery);
 
-          if (!healthSnap.empty) {
-            const latestHealthDoc = healthSnap.docs[0];
-            patientData.currentStatus = latestHealthDoc.data().status;
-            patientData.latestHealthDocId = latestHealthDoc.id;
-          } else {
-            patientData.currentStatus = "Normal";
-            patientData.latestHealthDocId = null;
+        if (!healthSnap.empty) {
+          const latestHealthDoc = healthSnap.docs[0];
+          patientData.currentStatus = latestHealthDoc.data().status;
+          patientData.latestHealthDocId = latestHealthDoc.id;
+        } else {
+          patientData.currentStatus = "Normal";
+          patientData.latestHealthDocId = null;
+        }
+        
+        patientsData.push(patientData);
+        
+        // Listen to real-time health data changes for THIS patient
+        const unsubHealth = onSnapshot(healthQuery, (healthSnapshot) => {
+          if (!healthSnapshot.empty) {
+            const latestHealth = healthSnapshot.docs[0];
+            const updatedStatus = latestHealth.data().status;
+            const updatedHealthDocId = latestHealth.id;
+            
+            // Update only this patient's status in state
+            setPatients(prevPatients => 
+              prevPatients.map(p => 
+                p.id === patientDoc.id 
+                  ? { 
+                      ...p, 
+                      currentStatus: updatedStatus,
+                      latestHealthDocId: updatedHealthDocId 
+                    }
+                  : p
+              )
+            );
           }
-
-          return patientData;
-        })
-      );
+        });
+        
+        healthUnsubscribers.push(unsubHealth);
+      }
       
       setPatients(patientsData);
       setLoading(false);
     });
-    return () => unsub();
+    
+    // Cleanup function
+    return () => {
+      unsubscribePatients();
+      healthUnsubscribers.forEach(unsub => unsub());
+    };
   }, [doctorId]);
 
-  return { patients, loading };
+  // Export setPatients so parent can do optimistic updates
+  return { patients, loading, setPatients };
 }

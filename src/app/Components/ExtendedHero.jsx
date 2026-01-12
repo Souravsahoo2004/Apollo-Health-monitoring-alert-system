@@ -64,10 +64,10 @@ const ExtendedHero = () => {
           {/* CTA */}
           <div className="mt-12 flex gap-4">
             <Link
-              href="/get-started"
+              href="/contact"
               className="bg-[#2F4FA3] text-white px-8 py-4 rounded-full font-semibold shadow-md hover:bg-[#243f8f] transition"
             >
-              Start Monitoring
+              Contact Us
             </Link>
 
             <Link
