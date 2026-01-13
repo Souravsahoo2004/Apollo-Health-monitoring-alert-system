@@ -43,16 +43,20 @@ export const patientService = {
     });
   },
 
+  // ✅ YOUR EXISTING deletePatient IS PERFECTLY CORRECT
   async deletePatient(doctorId, patientId) {
+    // First delete all healthData subcollection documents
     const healthRef = collection(db, "users", doctorId, "patients", patientId, "healthData");
     const healthSnapshot = await getDocs(healthRef);
     
+    // Delete all health documents in parallel
     const deleteHealthPromises = healthSnapshot.docs.map((healthDoc) =>
       deleteDoc(doc(db, "users", doctorId, "patients", patientId, "healthData", healthDoc.id))
     );
     
     await Promise.all(deleteHealthPromises);
     
+    // Finally delete the main patient document
     const patientRef = doc(db, "users", doctorId, "patients", patientId);
     await deleteDoc(patientRef);
   }

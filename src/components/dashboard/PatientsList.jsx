@@ -10,6 +10,7 @@ export default function PatientsList({
   onUpdateStatus,
   onUpdateActiveStatus,
   onEdit,
+  onDelete,  // ✅ ADDED onDelete prop
 }) {
   // Filter patients by status, search query, and date
   const filteredPatients = patients.filter((patient) => {
@@ -90,7 +91,8 @@ export default function PatientsList({
           <p className="text-sm sm:text-base text-gray-500">
             {searchQuery 
               ? `No patients match "${searchQuery}"` 
-              : `No ${filterStatus.toLowerCase()} patients found for the selected date range`}
+              : `No ${filterStatus.toLowerCase()} patients found for the selected date range`
+            }
           </p>
         </div>
       </div>
@@ -122,6 +124,7 @@ export default function PatientsList({
             onUpdateStatus={onUpdateStatus}
             onUpdateActiveStatus={onUpdateActiveStatus}
             onEdit={onEdit}
+            onDelete={onDelete}  // ✅ FIXED: Added onDelete prop
           />
         ))}
       </div>

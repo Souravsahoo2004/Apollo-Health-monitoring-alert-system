@@ -11,6 +11,7 @@ export function usePatientForm() {
     age: "",
     gender: "",
     phone: "",
+    familyPhone: "",  // ← Added family phone
     familyEmail: "",
   });
 
@@ -28,6 +29,7 @@ export function usePatientForm() {
       age: "",
       gender: "",
       phone: "",
+      familyPhone: "",  // ← Reset family phone
       familyEmail: "",
     });
     setHealthForm({
@@ -56,6 +58,7 @@ export function usePatientForm() {
       age: patient.age,
       gender: patient.gender,
       phone: patient.phone,
+      familyPhone: patient.familyPhone || "",  // ← Load family phone
       familyEmail: patient.familyEmail,
     });
     setShowPatientForm(true);
