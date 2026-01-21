@@ -3,19 +3,20 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-
-// Firebase
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 
+const ADMIN_EMAILS = [
+  "souravsahoo72051@gmail.com",
+  "souravsahoo90781@gmail.com"
+];
+
 export default function LoginPage() {
   const router = useRouter();
-
   const [formData, setFormData] = useState({
-    email: "",      // 🔁 changed from id → email
+    email: "",
     password: "",
   });
-
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -36,8 +37,14 @@ export default function LoginPage() {
         formData.password
       );
 
-      alert("Login successful!");
-      router.push("/dashboard");
+      // Check if admin email
+      if (ADMIN_EMAILS.includes(formData.email)) {
+        alert("Admin login successful!");
+        router.push("/admin-dashboard");
+      } else {
+        alert("Doctor login successful!");
+        router.push("/dashboard");
+      }
 
     } catch (error) {
       console.error(error);
@@ -50,7 +57,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md bg-white shadow-lg rounded-2xl p-8 border border-gray-200">
-
         {/* HEADER */}
         <div className="text-center mb-6">
           <h1 className="text-2xl font-bold text-[#2F4FA3]">
@@ -63,7 +69,6 @@ export default function LoginPage() {
 
         {/* FORM */}
         <form onSubmit={handleSubmit} className="space-y-4">
-
           {/* EMAIL */}
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -121,17 +126,15 @@ export default function LoginPage() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
 
         {/* FOOTER */}
         <p className="text-center text-sm text-gray-500 mt-6">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link href="/register" className="text-[#2F4FA3] hover:underline">
             Register here
           </Link>
         </p>
-
       </div>
     </div>
   );

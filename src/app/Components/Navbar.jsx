@@ -12,6 +12,13 @@ import { api } from "../../../convex/_generated/api";
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  // Admin emails from environment variables (same as admin-dashboard)
+  const ADMIN_EMAILS = [
+    process.env.NEXT_PUBLIC_ADMIN_EMAIL_1,
+    process.env.NEXT_PUBLIC_ADMIN_EMAIL_2
+  ].filter(Boolean);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -24,12 +31,30 @@ const Navbar = () => {
     user ? { userId: user.uid } : "skip"
   );
 
-  const getHref = (item) => (item === "Home" ? "/" : `/${item.toLowerCase()}`);
+  const getHref = (item) => {
+    if (item === "Home") return "/";
+    
+    // Dynamic Dashboard routing based on admin status
+    if (item === "Dashboard") {
+      return isAdmin ? "/admin-dashboard" : "/dashboard";
+    }
+    
+    return `/${item.toLowerCase()}`;
+  };
+
   const isActive = (item) => pathname === getHref(item);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+      if (currentUser) {
+        setUser(currentUser);
+        // Check if current user is admin
+        const adminStatus = ADMIN_EMAILS.includes(currentUser.email);
+        setIsAdmin(adminStatus);
+      } else {
+        setUser(null);
+        setIsAdmin(false);
+      }
     });
     return () => unsubscribe();
   }, []);
@@ -96,6 +121,13 @@ const Navbar = () => {
             </>
           ) : (
             <div className="flex items-center gap-4">
+              {/* Admin Badge */}
+              {isAdmin && (
+                <div className="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-semibold rounded-full border border-emerald-200">
+                  👑 Admin
+                </div>
+              )}
+              
               <Link href="/profile">
                 <img
                   src={profileImageUrl || "/avatar.png"}
@@ -164,6 +196,13 @@ const Navbar = () => {
               </>
             ) : (
               <>
+                {/* Admin Badge in mobile menu */}
+                {isAdmin && (
+                  <div className="px-3 py-2 bg-emerald-100 text-emerald-800 text-sm font-semibold rounded-full border border-emerald-200 w-fit">
+                    👑 Admin
+                  </div>
+                )}
+                
                 <Link
                   href="/profile"
                   onClick={() => setMenuOpen(false)}
