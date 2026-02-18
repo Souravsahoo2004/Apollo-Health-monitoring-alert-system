@@ -2,29 +2,29 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { signOut } from "firebase/auth";
 import { 
   collection, query, where, getDocs, doc, getDoc
 } from "firebase/firestore";
 import { auth, db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 import LoadingSpinner from "@/components/shared/LoadingSpinner";
 import Modal from "@/components/shared/Modal";
 import PatientForm from "@/components/forms/PatientForm";
 import { patientService } from "@/services/patientService";
 
-export default function AdminDashboard() {
-  const router = useRouter();
-  const [user, setUser] = useState(null);
-  const [isAuthorized, setIsAuthorized] = useState(false);
-  const [authLoading, setAuthLoading] = useState(true);
-  
-  // Admin emails from environment variables
-  const ADMIN_EMAILS = [
-    process.env.NEXT_PUBLIC_ADMIN_EMAIL_1,
-    process.env.NEXT_PUBLIC_ADMIN_EMAIL_2
-  ].filter(Boolean);
+const ADMIN_EMAILS = [
+  "souravsahoo72051@gmail.com",
+  "souravsahoo90781@gmail.com"
+];
 
+export default function AdminDashboard() {
+  const { user, userRole, doctorId, doctorName, loading: authLoading } = useAuth();
+  const router = useRouter();
+  
   const [doctors, setDoctors] = useState([]);
+  const [filteredDoctors, setFilteredDoctors] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [selectedDoctorPatients, setSelectedDoctorPatients] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,36 +36,28 @@ export default function AdminDashboard() {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showPatientDetails, setShowPatientDetails] = useState(false);
 
-  // Authentication protection
+  // PROTECTED: Only load if authorized admin
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        const isAdmin = ADMIN_EMAILS.includes(currentUser.email);
-        setIsAuthorized(isAdmin);
-        
-        if (!isAdmin) {
-          alert("🚫 Unauthorized access! You don't have access to this Admin Dashboard.");
-          signOut(auth).then(() => {
-            router.push("/login");
-          }).catch((error) => {
-            console.error("Logout error:", error);
-            router.push("/login");
-          });
-          return;
-        }
-        
-        // Authorized admin - fetch doctors
-        fetchAllDoctors();
-      } else {
-        // Not logged in - redirect to login
-        router.push("/login");
+    if (!authLoading && user) {
+      const isAdmin = ADMIN_EMAILS.includes(user.email);
+      if (!isAdmin || userRole !== 'Admin') {
+        alert("🚫 Unauthorized access! Redirecting to login...");
+        signOut(auth).then(() => router.push("/login"));
+        return;
       }
-      setAuthLoading(false);
-    });
+      fetchAllDoctors();
+    }
+  }, [authLoading, user, userRole, router]);
 
-    return () => unsubscribe();
-  }, [router]);
+  // Filter doctors based on search term
+  useEffect(() => {
+    const filtered = doctors.filter(doctor =>
+      doctor.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doctor.idNumber?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredDoctors(filtered);
+  }, [doctors, searchTerm]);
 
   const fetchAllDoctors = async () => {
     try {
@@ -104,6 +96,8 @@ export default function AdminDashboard() {
       setSelectedDoctor({ id: doctorId, ...doctorData });
 
       let allPatients = [];
+      
+      // Main patients collection
       try {
         const patientsQuery = query(
           collection(db, "patients"),
@@ -122,6 +116,7 @@ export default function AdminDashboard() {
         console.log("Main patients collection access failed:", error.message);
       }
 
+      // Doctor subcollection
       try {
         const patientSubRef = collection(db, "users", doctorId, "patients");
         const patientSubSnap = await getDocs(patientSubRef);
@@ -196,15 +191,14 @@ export default function AdminDashboard() {
     signOut(auth).then(() => router.push("/login"));
   };
 
-  // Show loading during auth check
+  // Loading states
   if (authLoading) {
     return <LoadingSpinner />;
   }
 
-  // Not authorized or no user - don't render dashboard
-  if (!isAuthorized || !user) {
+  if (!user || !ADMIN_EMAILS.includes(user.email)) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 flex items-center justify-center p-4">
         <LoadingSpinner />
       </div>
     );
@@ -213,9 +207,9 @@ export default function AdminDashboard() {
   if (loading) return <LoadingSpinner />;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-linear-to-br from-slate-50 via-white to-blue-50 p-4 sm:p-6 lg:p-8">
       <div className="max-w-full lg:max-w-7xl mx-auto">
-        {/* Header - Added admin email display */}
+        {/* Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 sm:mb-12 p-6 sm:p-8 bg-white/90 backdrop-blur-lg rounded-2xl lg:rounded-3xl shadow-xl border border-gray-200 gap-4">
           <div className="text-center sm:text-left">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight">
@@ -236,16 +230,38 @@ export default function AdminDashboard() {
 
         {/* Doctors Section */}
         <div className="bg-white rounded-2xl lg:rounded-3xl shadow-xl p-6 sm:p-8 lg:p-10 mb-8 lg:mb-12 border border-gray-200">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-6 sm:mb-8 gap-4">
             <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Registered Doctors</h2>
-            <div className="text-xl sm:text-2xl font-bold text-blue-600">
-              Total: {doctors.length}
+            <div className="flex flex-col sm:flex-row items-center gap-4 w-full lg:w-auto lg:shrink-0">
+              <div className="text-xl sm:text-2xl font-bold text-blue-600 w-full sm:w-auto">
+                Total: {filteredDoctors.length} of {doctors.length}
+              </div>
+              {/* Search Input */}
+              <div className="relative w-full sm:w-80 lg:w-96">
+                <input
+                  type="text"
+                  placeholder="🔍 Search doctors by name, email, or ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3 sm:py-4 rounded-xl lg:rounded-2xl border-2 border-gray-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 focus:outline-none transition-all duration-200 text-base sm:text-lg shadow-sm bg-white/80 backdrop-blur-sm hover:shadow-md"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
             </div>
           </div>
           
           <div className="overflow-x-auto rounded-xl lg:rounded-2xl border border-gray-200">
-            <table className="w-full min-w-[600px] sm:min-w-[700px]">
-              <thead className="bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+            <table className="w-full min-w-150 sm:min-w-175">
+              <thead className="bg-linear-to-r from-gray-900 to-gray-800 text-white">
                 <tr>
                   <th className="p-4 sm:p-6 text-left font-semibold text-base sm:text-lg uppercase tracking-wider">Doctor</th>
                   <th className="p-4 sm:p-6 text-left font-semibold text-base sm:text-lg uppercase tracking-wider hidden md:table-cell">Email</th>
@@ -253,7 +269,7 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {doctors.map((doctor) => (
+                {filteredDoctors.map((doctor) => (
                   <tr key={doctor.id} className="hover:bg-gray-50 transition-colors">
                     <td className="p-4 sm:p-6 font-semibold text-lg sm:text-xl text-gray-900 max-w-xs truncate">
                       {doctor.name}
@@ -266,7 +282,7 @@ export default function AdminDashboard() {
                       <button
                         onClick={() => fetchDoctorPatients(doctor.id)}
                         disabled={doctorLoadingStates[doctor.id]}
-                        className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:text-gray-200 text-white px-6 sm:px-10 py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:cursor-not-allowed border border-emerald-700 flex items-center justify-center gap-2 min-w-[140px] sm:min-w-[160px]"
+                        className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 disabled:text-gray-200 text-white px-6 sm:px-10 py-2.5 sm:py-3 rounded-xl font-semibold text-sm sm:text-lg shadow-lg hover:shadow-xl transition-all duration-200 disabled:cursor-not-allowed border border-emerald-700 flex items-center justify-center gap-2 min-w-35 sm:min-w-40"
                       >
                         {doctorLoadingStates[doctor.id] ? (
                           <>
@@ -287,6 +303,17 @@ export default function AdminDashboard() {
               </tbody>
             </table>
           </div>
+
+          {/* No results message */}
+          {filteredDoctors.length === 0 && searchTerm && (
+            <div className="text-center py-12 sm:py-16 border-2 border-dashed border-gray-300 rounded-xl lg:rounded-2xl bg-gray-50 mt-8">
+              <div className="text-5xl sm:text-6xl text-gray-400 mb-6">🔍</div>
+              <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4">No Doctors Found</h3>
+              <p className="text-lg sm:text-xl text-gray-600 max-w-md mx-auto">
+                No doctors match "{searchTerm}". Try adjusting your search terms.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Patients Section */}
@@ -321,8 +348,8 @@ export default function AdminDashboard() {
               </div>
             ) : (
               <div className="overflow-x-auto rounded-xl lg:rounded-2xl border border-gray-200 shadow-md">
-                <table className="w-full min-w-[500px] sm:min-w-[800px]">
-                  <thead className="bg-gradient-to-r from-indigo-600 to-purple-700 text-white">
+                <table className="w-full min-w-125 sm:min-w-200">
+                  <thead className="bg-linear-to-r from-indigo-600 to-purple-700 text-white">
                     <tr>
                       <th className="p-4 sm:p-6 text-left font-semibold text-sm sm:text-lg uppercase tracking-wider">Patient</th>
                       <th className="p-4 sm:p-6 text-left font-semibold text-sm sm:text-lg uppercase tracking-wider hidden sm:table-cell">Age</th>
@@ -391,7 +418,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Patient Details Modal - Fully Responsive */}
+        {/* Patient Details Modal */}
         {showPatientDetails && selectedPatient && (
           <Modal 
             title={`${selectedPatient.name} - Patient Profile`}
@@ -405,7 +432,7 @@ export default function AdminDashboard() {
                   <div className="space-y-4 sm:space-y-6 text-base sm:text-xl">
                     <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
                       <span className="font-semibold text-gray-700 w-24 sm:w-28 bg-gray-100 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base whitespace-nowrap">Name:</span>
-                      <span className="font-bold text-gray-900 flex-1 min-w-0 break-words">{selectedPatient.name}</span>
+                      <span className="font-bold text-gray-900 flex-1 min-w-0 wrap-break-words">{selectedPatient.name}</span>
                     </div>
                     <div className="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
                       <span className="font-semibold text-gray-700 w-24 sm:w-28 bg-gray-100 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg text-sm sm:text-base whitespace-nowrap">Age:</span>
@@ -493,4 +520,4 @@ export default function AdminDashboard() {
       </div>
     </div>
   );
-}
+} 

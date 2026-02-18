@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { ConvexClientProvider } from "./providers/ConvexProvider";
+import { AuthProvider } from "@/context/AuthContext"; // ✅ NEW
 import "leaflet/dist/leaflet.css";
 import "./globals.css";
 
@@ -24,11 +25,13 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <ConvexClientProvider>
-          <Navbar />
-          <main className="pt-18">{children}</main>
-          <Footer />
-        </ConvexClientProvider>
+        <AuthProvider> {/* ✅ WRAP EVERYTHING */}
+          <ConvexClientProvider>
+            <Navbar />
+            <main className="pt-18">{children}</main>
+            <Footer />
+          </ConvexClientProvider>
+        </AuthProvider>
       </body>
     </html>
   );

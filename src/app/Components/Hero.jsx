@@ -9,9 +9,9 @@ import { auth } from "../../lib/firebase"; // or "@/lib/firebase" if you have pa
 import { onAuthStateChanged } from "firebase/auth";
 
 const slides = [
-  { src: "/images/slide-1.png", link: "/dashboard" },
-  { src: "/images/slide-2.png", link: "/dashboard" },
-  { src: "/images/slide-3.png", link: "/dashboard" },
+  { src: "/images/slide-1.png", link: "/" },
+  { src: "/images/slide-2.png", link: "/" },
+  { src: "/images/slide-3.png", link: "/" },
 ];
 
 const Hero = () => {
