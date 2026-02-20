@@ -1,8 +1,8 @@
 import Image from "next/image";
-import Hero from "./components/Hero";
-import ExtendedHero from "./components/ExtendedHero";
-import ApolloFAQ from "./ApolloFAQ/page";
-import ApolloTestimonials from "./ApolloTestimonials/page";
+import Hero from "./Frontend/components/Hero";
+import ExtendedHero from "./Frontend/components/ExtendedHero";
+import ApolloFAQ from "./Frontend/ApolloFAQ/page";
+import ApolloTestimonials from "./Frontend/ApolloTestimonials/page";
 
 export default function Home() {
   return (

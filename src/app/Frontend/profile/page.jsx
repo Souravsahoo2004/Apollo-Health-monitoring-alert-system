@@ -12,7 +12,7 @@ import {
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { useMutation, useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 
 export default function ProfilePage() {
   const router = useRouter();
@@ -139,7 +139,7 @@ export default function ProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#F5F8FF] to-white flex items-center justify-center">
+      <div className="min-h-screen bg-linear-to-br from-[#F5F8FF] to-white flex items-center justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
@@ -154,7 +154,7 @@ export default function ProfilePage() {
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="min-h-screen bg-gradient-to-br from-[#F5F8FF] to-white flex justify-center px-4 py-12"
+      className="min-h-screen bg-linear-to-br from-[#F5F8FF] to-white flex justify-center px-4 py-12"
     >
       <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl border border-gray-100 p-8 space-y-8">
         {/* Header */}

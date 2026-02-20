@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { useQuery } from "convex/react";
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -36,10 +36,10 @@ const Navbar = () => {
     
     // Dynamic Dashboard routing based on admin status
     if (item === "Dashboard") {
-      return isAdmin ? "/admin-dashboard" : "/dashboard";
+      return isAdmin ? "/Frontend/admin-dashboard" : "/Frontend/dashboard";
     }
     
-    return `/${item.toLowerCase()}`;
+    return `/Frontend/${item.toLowerCase()}`;
   };
 
   const isActive = (item) => pathname === getHref(item);
@@ -65,7 +65,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full fixed top-0 left-0 z-[1001] bg-white shadow-sm border-b border-gray-200">
+    <nav className="w-full fixed top-0 left-0 z-1001 bg-white shadow-sm border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-3">
           <Image
@@ -128,7 +128,7 @@ const Navbar = () => {
                 </div>
               )}
               
-              <Link href="/profile">
+              <Link href="/Frontend/profile">
                 <img
                   src={profileImageUrl || "/avatar.png"}
                   alt="Profile"
@@ -158,7 +158,7 @@ const Navbar = () => {
       </div>
 
       {menuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg z-[1001]">
+        <div className="md:hidden bg-white border-t border-gray-200 shadow-lg z-1001">
           <ul className="flex flex-col items-center gap-6 py-6 font-medium">
             {navItems.map((item) => (
               <li key={item}>
@@ -204,7 +204,7 @@ const Navbar = () => {
                 )}
                 
                 <Link
-                  href="/profile"
+                  href="/Frontend/profile"
                   onClick={() => setMenuOpen(false)}
                   className="flex items-center gap-2"
                 >

@@ -109,13 +109,13 @@ const Footer = () => {
           </p>
 
           <div className="flex gap-6">
-            <Link href="/legal" className="hover:text-[#2F4FA3] transition">
+            <Link href="/Frontend/legal" className="hover:text-[#2F4FA3] transition">
               Privacy Policy
             </Link>
-            <Link href="/legal" className="hover:text-[#2F4FA3] transition">
+            <Link href="/Frontend/legal" className="hover:text-[#2F4FA3] transition">
               Terms of Service
             </Link>
-            <Link href="/legal" className="hover:text-[#2F4FA3] transition">
+            <Link href="/Frontend/legal" className="hover:text-[#2F4FA3] transition">
               Security
             </Link>
           </div>

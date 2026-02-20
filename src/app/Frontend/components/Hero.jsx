@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { auth } from "../../lib/firebase"; // or "@/lib/firebase" if you have path aliases
+import { auth } from "../../../lib/firebase"; // or "@/lib/firebase" if you have path aliases
 import { onAuthStateChanged } from "firebase/auth";
 
 const slides = [

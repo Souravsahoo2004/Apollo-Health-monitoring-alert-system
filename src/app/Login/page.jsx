@@ -40,10 +40,10 @@ export default function LoginPage() {
       // Check if admin email
       if (ADMIN_EMAILS.includes(formData.email)) {
         alert("Admin login successful!");
-        router.push("/admin-dashboard");
+        router.push("/Frontend/admin-dashboard");
       } else {
         alert("Doctor login successful!");
-        router.push("/dashboard");
+        router.push("/Frontend/dashboard");
       }
 
     } catch (error) {

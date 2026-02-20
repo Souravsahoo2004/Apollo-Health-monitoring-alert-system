@@ -51,7 +51,7 @@ export default function AboutApolloClient() {
           </div>
 
           {/* Map Card */}
-          <div className="relative h-[260px] md:h-[320px] rounded-xl overflow-hidden shadow-lg bg-white">
+          <div className="relative h-65 md:h-80 rounded-xl overflow-hidden shadow-lg bg-white">
             <AboutApolloMap
               locations={locations}
               onCityClick={setSelectedCity}
