@@ -61,7 +61,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
-    router.push("/login");
+    router.push("/Login");
   };
 
   return (
@@ -106,14 +106,14 @@ const Navbar = () => {
           {!user ? (
             <>
               <Link
-                href="/login"
+                href="/Login"
                 className="text-[#2F4FA3] font-medium hover:underline"
               >
                 Login
               </Link>
 
               <Link
-                href="/register"
+                href="/Register"
                 className="bg-[#2F4FA3] text-white px-5 py-2 rounded-full hover:bg-[#243f8f] transition shadow-sm"
               >
                 Register
@@ -179,7 +179,7 @@ const Navbar = () => {
             {!user ? (
               <>
                 <Link
-                  href="/login"
+                  href="/Login"
                   onClick={() => setMenuOpen(false)}
                   className="text-[#2F4FA3]"
                 >
@@ -187,14 +187,14 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  href="/register"
+                  href="/Register"
                   onClick={() => setMenuOpen(false)}
                   className="bg-[#2F4FA3] text-white px-6 py-2 rounded-full"
                 >
                   Register
                 </Link>
               </>
-            ) : (      
+            ) : (
               <>
                 {/* Admin Badge in mobile menu */}
                 {isAdmin && (
