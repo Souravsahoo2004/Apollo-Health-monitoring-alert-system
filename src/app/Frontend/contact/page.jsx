@@ -122,7 +122,7 @@ export default function ContactPage() {
           </p>
           
           <Link 
-            href="/login" 
+            href="/Login" 
             className="inline-block bg-[#2F4FA3] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#243f8f] transition shadow-lg"
           >
             Go to Login
