@@ -61,7 +61,7 @@ const Navbar = () => {
 
   const handleLogout = async () => {
     await signOut(auth);
-    router.push("/Login");
+    router.push("/login");
   };
 
   return (
@@ -106,7 +106,7 @@ const Navbar = () => {
           {!user ? (
             <>
               <Link
-                href="/Login"
+                href="/login"
                 className="text-[#2F4FA3] font-medium hover:underline"
               >
                 Login
@@ -179,7 +179,7 @@ const Navbar = () => {
             {!user ? (
               <>
                 <Link
-                  href="/Login"
+                  href="/login"
                   onClick={() => setMenuOpen(false)}
                   className="text-[#2F4FA3]"
                 >
