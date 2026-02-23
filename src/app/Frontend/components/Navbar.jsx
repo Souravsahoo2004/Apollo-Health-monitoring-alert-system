@@ -194,7 +194,7 @@ const Navbar = () => {
                   Register
                 </Link>
               </>
-            ) : (
+            ) : (      
               <>
                 {/* Admin Badge in mobile menu */}
                 {isAdmin && (
