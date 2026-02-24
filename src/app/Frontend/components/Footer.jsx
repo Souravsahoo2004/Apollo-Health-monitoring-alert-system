@@ -62,17 +62,17 @@ const Footer = () => {
             </h4>
             <ul className="space-y-3 text-gray-600">
               <li>
-                <Link href="/about" className="hover:text-[#2F4FA3] transition">
+                <Link href="/Frontend/about" className="hover:text-[#2F4FA3] transition">
                   About Us
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-[#2F4FA3] transition">
+                <Link href="/Frontend/contact" className="hover:text-[#2F4FA3] transition">
                   Contact Us
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="hover:text-[#2F4FA3] transition">
+                <Link href="/Frontend/dashboard" className="hover:text-[#2F4FA3] transition">
                   Dashboard
                 </Link>
               </li>
