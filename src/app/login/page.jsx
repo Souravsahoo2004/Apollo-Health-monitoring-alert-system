@@ -144,7 +144,7 @@ const [showPassword, setShowPassword] = useState(false);
         {/* FOOTER */}
         <p className="text-center text-sm text-gray-500 mt-6">
           Don't have an account?{" "}
-          <Link href="/register" className="text-[#2F4FA3] hover:underline">
+          <Link href="/Register" className="text-[#2F4FA3] hover:underline">
             Register here
           </Link>
         </p>
